@@ -3,6 +3,7 @@ import { Hero } from '@/app/(nondashboard)/landing/components/hero';
 import { Features } from '@/app/(nondashboard)/landing/components/features';
 import { Discover } from '@/app/(nondashboard)/landing/components/discover';
 import { CallToAction } from '@/app/(nondashboard)/landing/components/call-to-action';
+import { Footer } from '@/app/(nondashboard)/landing/components/footer';
 
 const Landing = () => {
   return (
@@ -11,6 +12,7 @@ const Landing = () => {
       <Features />
       <Discover />
       <CallToAction />
+      <Footer />
     </>
   );
 };
