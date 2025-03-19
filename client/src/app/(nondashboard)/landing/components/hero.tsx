@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 export function Hero() {
   return (
-    <section className='relative h-screen'>
+    <section className='relative min-h-screen h-full'>
       <Image
         src='/landing-splash.jpg'
         alt='Rentiful Rental Platform Hero Section'
