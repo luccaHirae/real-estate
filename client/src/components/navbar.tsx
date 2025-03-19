@@ -51,7 +51,7 @@ export function Navbar() {
 
           <Link href='/sign-up'>
             <Button
-              variant='outline'
+              variant='secondary'
               className='text-white border-white bg-secondary-600 hover:bg-white hover:text-primary-700 rounded-lg cursor-pointer'
             >
               Sign Up
