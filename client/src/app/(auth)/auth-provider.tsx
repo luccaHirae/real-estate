@@ -1,4 +1,7 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Amplify } from 'aws-amplify';
 import {
   Authenticator,
@@ -134,9 +137,32 @@ const formFields = {
 };
 
 export default function Auth({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthenticator((context) => [context.user]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const isAuthRoute = pathname.match(/^\/(sign-in|sign-up)$/);
+  const isDashboardRoute =
+    pathname.startsWith('/manager') || pathname.startsWith('/tenants');
+
+  // Redirect to dashboard if user is authenticated and trying to access auth routes
+  useEffect(() => {
+    if (user && isAuthRoute) {
+      router.push('/');
+    }
+  }, [isAuthRoute, router, user]);
+
+  // Allow unauthenticated users to access public routes
+  if (!isAuthRoute && !isDashboardRoute) {
+    return <>{children}</>;
+  }
+
   return (
     <div className='h-full'>
-      <Authenticator components={components} formFields={formFields}>
+      <Authenticator
+        initialState={pathname.includes('sign-up') ? 'signUp' : 'signIn'}
+        components={components}
+        formFields={formFields}
+      >
         {() => <>{children}</>}
       </Authenticator>
     </div>
