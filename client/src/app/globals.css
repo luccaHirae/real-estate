@@ -267,9 +267,9 @@ body,
 }
 
 [data-amplify-authenticator] [data-amplify-container] {
-  border-radius: var(--radius);
+  border-radius: var(--radius) !important;
   padding: 2rem !important;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid #CED1D6 !important;
 }
 
 [data-amplify-authenticator] [data-amplify-form] {
@@ -284,18 +284,19 @@ body,
   width: 100%;
   height: 2.75rem;
   margin-top: 1rem;
-  background-color: hsl(var(--primary)) !important;
-  color: hsl(var(--primary-foreground)) !important;
+  background-color: #3B82F6 !important;
+  color:#fff !important;
   @apply font-medium;
   @apply text-sm;
 }
 
 [data-amplify-authenticator] .amplify-button--primary:hover {
   background-color: hsl(var(--primary) / 0.8) !important;
+  color: hsl(var(--primary-foreground)) !important;
 }
 
 [data-amplify-authenticator] .amplify-field-group__control {
-  border-color: hsl(var(--input));
+  border-color: #CED1D6;
 }
 
 [data-amplify-authenticator] .amplify-field-group__control:focus-within {
@@ -304,7 +305,8 @@ body,
 }
 
 [data-amplify-authenticator] .amplify-field__show-password {
-  color: hsl(var(--muted-foreground));
+  border-color: #CED1D6;
+  background-color: transparent;
 }
 
 [data-amplify-authenticator] .amplify-label {
