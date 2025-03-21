@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import tenantRoutes from './routes/tenant-routes';
+import managerRoutes from './routes/manager-routes';
 import { authMiddleware } from './middleware/auth-middleware';
 
 /* Config */
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 app.use('/tenants', authMiddleware(['tenant']), tenantRoutes);
+app.use('/managers', authMiddleware(['manager']), managerRoutes);
 
 /* Server */
 const port = process.env.PORT || 3001;

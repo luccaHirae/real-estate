@@ -3,28 +3,28 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getTenant = async (req: Request, res: Response): Promise<void> => {
+export const getManager = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { cognitoId } = req.params;
 
-    const tenant = await prisma.tenant.findUnique({
+    const manager = await prisma.manager.findUnique({
       where: {
         cognitoId,
       },
-      include: {
-        favorites: true,
-      },
     });
 
-    if (tenant) res.json(tenant);
-    else res.status(404).json({ message: 'Tenant not found' });
+    if (manager) res.json(manager);
+    else res.status(404).json({ message: 'Manager not found' });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ message: `Error retrieving tenant: ${message}` });
+    res.status(500).json({ message: `Error retrieving manager: ${message}` });
   }
 };
 
-export const createTenant = async (
+export const createManager = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -32,7 +32,7 @@ export const createTenant = async (
     const { cognitoId, name, email, phoneNumber } = req.body;
     // TODO: Add validation for the input fields
 
-    const tenant = await prisma.tenant.create({
+    const manager = await prisma.manager.create({
       data: {
         cognitoId,
         name,
@@ -41,9 +41,9 @@ export const createTenant = async (
       },
     });
 
-    res.status(201).json(tenant);
+    res.status(201).json(manager);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    res.status(500).json({ message: `Error creating tenant: ${message}` });
+    res.status(500).json({ message: `Error creating manager: ${message}` });
   }
 };
