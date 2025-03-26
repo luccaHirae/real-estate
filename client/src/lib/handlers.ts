@@ -26,7 +26,7 @@ export const insertNewUser = async (
     body: {
       cognitoId: user.userId,
       name: user.username,
-      email: user.signInDetails?.loginId,
+      email: user.signInDetails?.loginId || '',
       phoneNumber: '',
     },
   });
