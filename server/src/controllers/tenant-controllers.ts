@@ -47,3 +47,33 @@ export const createTenant = async (
     res.status(500).json({ message: `Error creating tenant: ${message}` });
   }
 };
+
+export const updateTenant = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { cognitoId } = req.params;
+    const { name, email, phoneNumber } = req.body;
+
+    const tenant = await prisma.tenant.update({
+      where: {
+        cognitoId,
+      },
+      data: {
+        name,
+        email,
+        phoneNumber,
+      },
+    });
+
+    if (tenant) {
+      res.json(tenant);
+    } else {
+      res.status(404).json({ message: 'Tenant not found' });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ message: `Error updating tenant: ${message}` });
+  }
+};
