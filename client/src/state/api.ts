@@ -18,7 +18,7 @@ export const api = createApi({
     },
   }),
   reducerPath: 'api',
-  tagTypes: [],
+  tagTypes: ['Tenant', 'Manager'],
   endpoints: (build) => ({
     getAuthUser: build.query<User, void>({
       queryFn: async (_, _queryApi, _extraOptions, fetchWithBQ) => {
@@ -75,9 +75,7 @@ export const api = createApi({
         method: 'PUT',
         body: updatedTenant,
       }),
-      invalidatesTags: (result) => [
-        { type: 'Tenant' as never, id: result?.id },
-      ],
+      invalidatesTags: (result) => [{ type: 'Tenant', id: result?.id }],
     }),
     updateManagerSettings: build.mutation<
       Manager,
@@ -88,9 +86,7 @@ export const api = createApi({
         method: 'PUT',
         body: updatedManager,
       }),
-      invalidatesTags: (result) => [
-        { type: 'Manager' as never, id: result?.id },
-      ],
+      invalidatesTags: (result) => [{ type: 'Manager', id: result?.id }],
     }),
   }),
 });
