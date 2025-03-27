@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { useGetAuthUserQuery } from '@/state/api';
 import { Navbar } from '@/components/navbar';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 interface NonDashboardLayoutProps {
   children: React.ReactNode;
@@ -34,12 +34,7 @@ const NonDashboardLayout = ({ children }: NonDashboardLayoutProps) => {
     }
   }, [authUser, pathname, router]);
 
-  if (isAuthLoading || isLoading)
-    return (
-      <div className='flex justify-center items-center h-screen'>
-        <Loader2 className='animate-spin w-10 h-10 text-secondary-600' />
-      </div>
-    );
+  if (isAuthLoading || isLoading) return <LoadingSpinner />;
 
   return (
     <div className='h-full w-full'>

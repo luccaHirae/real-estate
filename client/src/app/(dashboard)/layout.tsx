@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { useGetAuthUserQuery } from '@/state/api';
 import { Navbar } from '@/components/navbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import { LoadingSpinner } from '@/components/loading-spinner';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -39,12 +39,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   }, [authUser, pathname, router]);
 
-  if (isAuthLoading || isLoading)
-    return (
-      <div className='flex justify-center items-center h-screen'>
-        <Loader2 className='animate-spin w-10 h-10 text-secondary-600' />
-      </div>
-    );
+  if (isAuthLoading || isLoading) return <LoadingSpinner />;
 
   if (!authUser?.userRole) return null;
 
