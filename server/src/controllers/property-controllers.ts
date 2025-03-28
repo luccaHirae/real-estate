@@ -1,7 +1,14 @@
 import { Request, Response } from 'express';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Location, Prisma, PrismaClient } from '@prisma/client';
+import { wktToGeoJSON } from '@terraformer/wkt';
+import { Upload } from '@aws-sdk/lib-storage';
+import { S3Client } from '@aws-sdk/client-s3';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+});
 
 export const getProperties = async (
   req: Request,
@@ -149,8 +156,46 @@ export const getProperty = async (
   res: Response
 ): Promise<void> => {
   try {
-    // TODO: implement get property logic
-    res.status(200).json({ message: 'Property retrieved successfully' });
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ message: 'Property ID is required' });
+      return;
+    }
+
+    const property = await prisma.property.findUnique({
+      where: { id: Number(id) },
+      include: {
+        location: true,
+      },
+    });
+
+    if (property) {
+      const coordinates: { coordinates: string }[] =
+        await prisma.$queryRaw`SELECT ST_asText(coordinates) AS coordinates FROM "Location" WHERE id = ${property.location.id}`;
+
+      const geoJSON = wktToGeoJSON(coordinates[0].coordinates) as {
+        type: string;
+        coordinates: [number, number];
+      };
+      const longitude = geoJSON.coordinates[0];
+      const latitude = geoJSON.coordinates[1];
+
+      const propertyWithCoordinates = {
+        ...property,
+        location: {
+          ...property.location,
+          coordinates: {
+            longitude,
+            latitude,
+          },
+        },
+      };
+
+      res.status(200).json(propertyWithCoordinates);
+    } else {
+      res.status(404).json({ message: 'Property not found' });
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ message: `Error retrieving property: ${message}` });
@@ -162,8 +207,101 @@ export const createProperty = async (
   res: Response
 ): Promise<void> => {
   try {
-    // TODO: implement create property logic
-    res.status(201).json({ message: 'Property created successfully' });
+    const files = req.files as Express.Multer.File[];
+    const {
+      address,
+      city,
+      state,
+      country,
+      postalCode,
+      managerCognitoId,
+      ...propertyData
+    } = req.body;
+
+    // TODO: Validate input data
+
+    const photoUrls = await Promise.all(
+      files.map(async (file) => {
+        const uploadParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `properties/${Date.now()}-${file.originalname}`,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        };
+
+        const uploadResult = await new Upload({
+          client: s3Client,
+          params: uploadParams,
+        }).done();
+
+        return uploadResult.Location;
+      })
+    );
+
+    // TODO: upload photos to S3 bucket
+
+    const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
+      {
+        street: address,
+        city,
+        country,
+        postalcode: postalCode,
+        format: 'json',
+        limit: '1',
+      }
+    ).toString()}`;
+
+    const geocodingResponse = await axios.get(geocodingUrl, {
+      headers: {
+        'User-Agent': `RealEstateApp (${process.env.APP_EMAIL})`,
+      },
+    });
+
+    const [longitude, latitude] =
+      geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat
+        ? [
+            parseFloat(geocodingResponse.data[0].lon),
+            parseFloat(geocodingResponse.data[0].lat),
+          ]
+        : [0, 0];
+
+    // Create location
+    const [location] = await prisma.$queryRaw<Location[]>`
+      INSERT INTO "Location" (address, city, state, country, "postalCode", coordinates)
+      VALUES (${address}, ${city}, ${state}, ${country}, ${postalCode}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
+      RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) AS coordinates
+    `;
+
+    // Create property
+    const newProperty = await prisma.property.create({
+      data: {
+        ...propertyData,
+        locationId: location.id,
+        managerCognitoId,
+        amenities:
+          typeof propertyData.amenities === 'string'
+            ? propertyData.amenities.split(',')
+            : [],
+        highlights:
+          typeof propertyData.highlights === 'string'
+            ? propertyData.highlights.split(',')
+            : [],
+        isPetsAllowed: propertyData.isPetsAllowed === 'true',
+        isParkingIncluded: propertyData.isParkingIncluded === 'true',
+        pricePerMonth: parseFloat(propertyData.pricePerMonth),
+        securityDeposit: parseFloat(propertyData.securityDeposit),
+        applicationFee: parseFloat(propertyData.applicationFee),
+        beds: parseInt(propertyData.beds, 10),
+        baths: parseInt(propertyData.baths, 10),
+        squareFeet: parseInt(propertyData.squareFeet, 10),
+      },
+      include: {
+        location: true,
+        manager: true,
+      },
+    });
+
+    res.status(201).json(newProperty);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ message: `Error creating property: ${message}` });
