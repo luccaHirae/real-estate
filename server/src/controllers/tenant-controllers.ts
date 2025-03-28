@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { wktToGeoJSON } from '@terraformer/wkt';
 
 const prisma = new PrismaClient();
 
@@ -75,5 +76,64 @@ export const updateTenant = async (
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ message: `Error updating tenant: ${message}` });
+  }
+};
+
+export const getCurrentResidences = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { cognitoId } = req.params;
+
+    if (!cognitoId) {
+      res.status(400).json({ message: 'Property cognitoId is required' });
+      return;
+    }
+
+    const properties = await prisma.property.findMany({
+      where: {
+        tenants: {
+          some: {
+            cognitoId,
+          },
+        },
+      },
+      include: {
+        location: true,
+      },
+    });
+
+    const residencesWithFormattedLocation = await Promise.all(
+      properties.map(async (property) => {
+        const coordinates: { coordinates: string }[] =
+          await prisma.$queryRaw`SELECT ST_asText(coordinates) AS coordinates FROM "Location" WHERE id = ${property.location.id}`;
+
+        const geoJSON = wktToGeoJSON(coordinates[0].coordinates) as {
+          type: string;
+          coordinates: [number, number];
+        };
+        const longitude = geoJSON.coordinates[0];
+        const latitude = geoJSON.coordinates[1];
+
+        return {
+          ...property,
+          location: {
+            ...property.location,
+            coordinates: {
+              longitude,
+              latitude,
+            },
+          },
+        };
+      })
+    );
+
+    res.status(200).json(residencesWithFormattedLocation);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res
+      .status(500)
+      .json({ message: `Error retrieving properties: ${message}` });
   }
 };
