@@ -9,6 +9,7 @@ import tenantRoutes from './routes/tenant-routes';
 import managerRoutes from './routes/manager-routes';
 import propertyRoutes from './routes/property-routes';
 import leaseRoutes from './routes/lease-routes';
+import applicationRoutes from './routes/application-routes';
 import { authMiddleware } from './middleware/auth-middleware';
 
 /* Config */
@@ -30,6 +31,7 @@ app.use('/tenants', authMiddleware(['tenant']), tenantRoutes);
 app.use('/managers', authMiddleware(['manager']), managerRoutes);
 app.use('/properties', propertyRoutes);
 app.use('/leases', leaseRoutes);
+app.use('/applications', applicationRoutes);
 
 /* Server */
 const port = process.env.PORT || 3001;
