@@ -137,3 +137,54 @@ export const getCurrentResidences = async (
       .json({ message: `Error retrieving properties: ${message}` });
   }
 };
+
+export const addFavoriteProperty = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { cognitoId, propertyId } = req.params;
+
+    if (!cognitoId || !propertyId) {
+      res
+        .status(400)
+        .json({ message: 'Cognito ID and Property ID are required' });
+      return;
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { cognitoId },
+      include: { favorites: true },
+    });
+
+    const propertyIdNumber = Number(propertyId);
+    const existingFavorites = tenant?.favorites || [];
+
+    if (
+      !existingFavorites.some((favorite) => favorite.id === propertyIdNumber)
+    ) {
+      const updatedTenant = await prisma.tenant.update({
+        where: { cognitoId },
+        data: {
+          favorites: {
+            connect: {
+              id: propertyIdNumber,
+            },
+          },
+        },
+        include: {
+          favorites: true,
+        },
+      });
+
+      res.status(200).json(updatedTenant);
+    } else {
+      res.status(409).json({ message: 'Property already in favorites' });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res
+      .status(500)
+      .json({ message: `Error adding favorite property: ${message}` });
+  }
+};
