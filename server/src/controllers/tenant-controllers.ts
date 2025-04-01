@@ -188,3 +188,41 @@ export const addFavoriteProperty = async (
       .json({ message: `Error adding favorite property: ${message}` });
   }
 };
+
+export const removeFavoriteProperty = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { cognitoId, propertyId } = req.params;
+
+    if (!cognitoId || !propertyId) {
+      res
+        .status(400)
+        .json({ message: 'Cognito ID and Property ID are required' });
+      return;
+    }
+    const propertyIdNumber = Number(propertyId);
+
+    const updatedTenant = await prisma.tenant.update({
+      where: { cognitoId },
+      data: {
+        favorites: {
+          disconnect: {
+            id: propertyIdNumber,
+          },
+        },
+      },
+      include: {
+        favorites: true,
+      },
+    });
+
+    res.status(200).json(updatedTenant);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res
+      .status(500)
+      .json({ message: `Error removing favorite property: ${message}` });
+  }
+};
