@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import tenantRoutes from './routes/tenant-routes';
 import managerRoutes from './routes/manager-routes';
 import propertyRoutes from './routes/property-routes';
+import leaseRoutes from './routes/lease-routes';
 import { authMiddleware } from './middleware/auth-middleware';
 
 /* Config */
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/tenants', authMiddleware(['tenant']), tenantRoutes);
 app.use('/managers', authMiddleware(['manager']), managerRoutes);
 app.use('/properties', propertyRoutes);
+app.use('/leases', leaseRoutes);
 
 /* Server */
 const port = process.env.PORT || 3001;
