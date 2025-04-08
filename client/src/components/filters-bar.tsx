@@ -30,23 +30,19 @@ export function FiltersBar() {
   const viewMode = useAppSelector((state) => state.global.viewMode);
   const [search, setSearch] = useState(filters.location);
 
-  const updateURL = debounce(
-    (newFilters) => {
-      const cleanFilters = cleanParams(newFilters);
-      const searchParams = new URLSearchParams();
+  const updateURL = debounce((newFilters) => {
+    const cleanFilters = cleanParams(newFilters);
+    const searchParams = new URLSearchParams();
 
-      Object.entries(cleanFilters).forEach(([key, value]) => {
-        searchParams.set(
-          key,
-          Array.isArray(value) ? value.join(',') : value.toString()
-        );
-      });
+    Object.entries(cleanFilters).forEach(([key, value]) => {
+      searchParams.set(
+        key,
+        Array.isArray(value) ? value.join(',') : value.toString()
+      );
+    });
 
-      router.push(`${pathname}?${searchParams.toString()}`);
-    },
-    500,
-    { leading: false, trailing: true }
-  );
+    router.push(`${pathname}?${searchParams.toString()}`);
+  });
 
   const handleFilterChange = (
     key: string,
