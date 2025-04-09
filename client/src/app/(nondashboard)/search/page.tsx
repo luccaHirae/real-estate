@@ -1,13 +1,14 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/state/redux';
+import { setFilters } from '@/state';
 import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cleanParams, cn } from '@/lib/utils';
 import { FiltersBar } from '@/components/filters-bar';
 import { FiltersFull } from '@/components/filters-full';
-import { useEffect } from 'react';
-import { setFilters } from '@/state';
+import { Map } from '@/components/map';
 
 type Filters = {
   priceRange?: [number | null, number | null];
@@ -69,7 +70,7 @@ const SearchPage = () => {
           <FiltersFull />
         </div>
 
-        {/* <Map /> */}
+        <Map />
 
         <div className='basis-4/12 overflow-y-auto'>{/* <Listings /> */}</div>
       </div>
