@@ -68,17 +68,6 @@ export const api = createApi({
         }
       },
     }),
-    updateTenantSettings: build.mutation<
-      Tenant,
-      { cognitoId: string } & Partial<Tenant>
-    >({
-      query: ({ cognitoId, ...updatedTenant }) => ({
-        url: `/tenants/${cognitoId}`,
-        method: 'PUT',
-        body: updatedTenant,
-      }),
-      invalidatesTags: (result) => [{ type: 'Tenant', id: result?.id }],
-    }),
     updateManagerSettings: build.mutation<
       Manager,
       { cognitoId: string } & Partial<Manager>
@@ -123,6 +112,44 @@ export const api = createApi({
             ]
           : [{ type: 'Properties', id: 'LIST' }],
     }),
+    // tenant endpoints
+    updateTenantSettings: build.mutation<
+      Tenant,
+      { cognitoId: string } & Partial<Tenant>
+    >({
+      query: ({ cognitoId, ...updatedTenant }) => ({
+        url: `/tenants/${cognitoId}`,
+        method: 'PUT',
+        body: updatedTenant,
+      }),
+      invalidatesTags: (result) => [{ type: 'Tenant', id: result?.id }],
+    }),
+    addFavoriteProperty: build.mutation<
+      Tenant,
+      { cognitoId: string; propertyId: number }
+    >({
+      query: ({ cognitoId, propertyId }) => ({
+        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result) => [
+        { type: 'Tenant', id: result?.id },
+        { type: 'Properties', id: 'LIST' },
+      ],
+    }),
+    removeFavoriteProperty: build.mutation<
+      Tenant,
+      { cognitoId: string; propertyId: number }
+    >({
+      query: ({ cognitoId, propertyId }) => ({
+        url: `tenants/${cognitoId}/favorites/${propertyId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result) => [
+        { type: 'Tenant', id: result?.id },
+        { type: 'Properties', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -131,4 +158,6 @@ export const {
   useUpdateTenantSettingsMutation,
   useUpdateManagerSettingsMutation,
   useGetPropertiesQuery,
+  useAddFavoritePropertyMutation,
+  useRemoveFavoritePropertyMutation,
 } = api;
