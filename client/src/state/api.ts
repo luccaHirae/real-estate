@@ -126,7 +126,7 @@ export const api = createApi({
     }),
     addFavoriteProperty: build.mutation<
       Tenant,
-      { cognitoId: string; propertyId: number }
+      { cognitoId: string; propertyId: string }
     >({
       query: ({ cognitoId, propertyId }) => ({
         url: `tenants/${cognitoId}/favorites/${propertyId}`,
@@ -139,7 +139,7 @@ export const api = createApi({
     }),
     removeFavoriteProperty: build.mutation<
       Tenant,
-      { cognitoId: string; propertyId: number }
+      { cognitoId: string; propertyId: string }
     >({
       query: ({ cognitoId, propertyId }) => ({
         url: `tenants/${cognitoId}/favorites/${propertyId}`,

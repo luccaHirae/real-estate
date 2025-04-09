@@ -8,6 +8,7 @@ import { NAVBAR_HEIGHT } from '@/lib/constants';
 import { cleanParams, cn } from '@/lib/utils';
 import { FiltersBar } from '@/components/filters-bar';
 import { FiltersFull } from '@/components/filters-full';
+import { Listings } from '@/components/listings';
 import { Map } from '@/components/map';
 
 type Filters = {
@@ -72,7 +73,9 @@ const SearchPage = () => {
 
         <Map />
 
-        <div className='basis-4/12 overflow-y-auto'>{/* <Listings /> */}</div>
+        <div className='basis-4/12 overflow-y-auto'>
+          <Listings />
+        </div>
       </div>
     </div>
   );
