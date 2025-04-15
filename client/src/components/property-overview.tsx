@@ -4,7 +4,7 @@ import { MapPin, Star } from 'lucide-react';
 import { useGetPropertyQuery } from '@/state/api';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
-export function PropertyOverview({ propertyId }: { propertyId: number }) {
+export function PropertyOverview({ propertyId }: PropertyOverviewProps) {
   const {
     data: property,
     isError,
