@@ -113,6 +113,10 @@ export const api = createApi({
           : [{ type: 'Properties', id: 'LIST' }],
     }),
     // tenant endpoints
+    getTenant: build.query<Tenant, string>({
+      query: (cognitoId) => `tenants/${cognitoId}`,
+      providesTags: (result) => [{ type: 'Tenant', id: result?.id }],
+    }),
     updateTenantSettings: build.mutation<
       Tenant,
       { cognitoId: string } & Partial<Tenant>
@@ -160,4 +164,5 @@ export const {
   useGetPropertiesQuery,
   useAddFavoritePropertyMutation,
   useRemoveFavoritePropertyMutation,
+  useGetTenantQuery,
 } = api;
