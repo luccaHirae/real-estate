@@ -29,3 +29,7 @@ export function formatPriceValue(value: number | null, isMin: boolean) {
 
   return isMin ? `$${value}+` : `<$${value}`;
 }
+
+export function formatEnumString(str: string) {
+  return str.replace(/([A-Z])/g, ' $1').trim();
+}
