@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 // import { useGetAuthUserQuery } from '@/state/api';
 import { ImagePreviews } from '@/components/image-previews';
 import { PropertyOverview } from '@/components/property-overview';
 import { PropertyDetails } from '@/components/property-details';
 import { PropertyLocation } from '@/components/property-location';
+import { ContactWidget } from '@/components/contact-widget';
 
 const SingleListing = () => {
   const { id } = useParams();
@@ -13,6 +15,7 @@ const SingleListing = () => {
   // const { data: authUser } = useGetAuthUserQuery(undefined, {
   //   refetchOnMountOrArgChange: true,
   // });
+  const [, setIsModalOpen] = useState(false);
 
   return (
     <div>
@@ -25,6 +28,10 @@ const SingleListing = () => {
           <PropertyOverview propertyId={propertyId} />
           <PropertyDetails propertyId={propertyId} />
           <PropertyLocation propertyId={propertyId} />
+        </div>
+
+        <div className='order-1 md:order-2'>
+          <ContactWidget onOpenModal={() => setIsModalOpen(true)} />
         </div>
       </div>
     </div>
