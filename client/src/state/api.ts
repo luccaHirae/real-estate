@@ -101,7 +101,12 @@ export const api = createApi({
 
         return {
           url: 'properties',
-          params,
+          params: {
+            ...params,
+            ...(filters.favoriteIds && {
+              favoriteIds: filters.favoriteIds.join(','),
+            }),
+          },
         };
       },
       providesTags: (result) =>
