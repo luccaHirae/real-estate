@@ -127,7 +127,7 @@ export const api = createApi({
       providesTags: (result) => [{ type: 'Tenant', id: result?.id }],
     }),
     getCurrentResidences: build.query<Property[], string>({
-      query: (cognitoId) => `tenants/${cognitoId}/current-redidences`,
+      query: (cognitoId) => `tenants/${cognitoId}/current-residences`,
       providesTags: (result) =>
         result
           ? [
