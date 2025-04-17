@@ -1,7 +1,7 @@
 import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { insertNewUser } from '@/lib/handlers';
-import { Manager, Property, Tenant } from '@/types/prisma';
+import { Lease, Manager, Payment, Property, Tenant } from '@/types/prisma';
 import { cleanParams } from '@/lib/utils';
 import { FiltersState } from '.';
 
@@ -20,7 +20,14 @@ export const api = createApi({
     },
   }),
   reducerPath: 'api',
-  tagTypes: ['Tenant', 'Manager', 'Properties', 'PropertyDetails'],
+  tagTypes: [
+    'Tenant',
+    'Manager',
+    'Properties',
+    'PropertyDetails',
+    'Leases',
+    'Payments',
+  ],
   endpoints: (build) => ({
     getAuthUser: build.query<User, void>({
       queryFn: async (_, _queryApi, _extraOptions, fetchWithBQ) => {
@@ -173,6 +180,15 @@ export const api = createApi({
         { type: 'Properties', id: 'LIST' },
       ],
     }),
+    // lease endpoints
+    getLeases: build.query<Lease[], number>({
+      query: () => 'leases',
+      providesTags: ['Leases'],
+    }),
+    getPayments: build.query<Payment[], number>({
+      query: (leaseId) => `leases/${leaseId}/payments`,
+      providesTags: ['Payments'],
+    }),
   }),
 });
 
@@ -186,4 +202,6 @@ export const {
   useAddFavoritePropertyMutation,
   useRemoveFavoritePropertyMutation,
   useGetTenantQuery,
+  useGetLeasesQuery,
+  useGetPaymentsQuery,
 } = api;
