@@ -102,7 +102,7 @@ export function ExtendedFormField({
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
 
-            <SelectContent className='w-full border-gray-200 shadow'>
+            <SelectContent className='w-full border-gray-200 shadow bg-white'>
               {options?.map((option) => (
                 <SelectItem
                   key={option.value}
