@@ -6,6 +6,7 @@ import { Edit, Plus, X } from 'lucide-react';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import 'filepond/dist/filepond.css';
 import {
   Control,
   ControllerRenderProps,
@@ -107,7 +108,7 @@ export function ExtendedFormField({
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className='cursor-pointer hover:bg-gray-100 hover:text-customgreys-darkgrey'
+                  className='cursor-pointer hover:bg-gray-500 hover:text-customgreys-darkgrey'
                 >
                   {option.label}
                 </SelectItem>
