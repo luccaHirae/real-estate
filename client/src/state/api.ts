@@ -191,6 +191,17 @@ export const api = createApi({
             ]
           : [{ type: 'Properties', id: 'LIST' }],
     }),
+    createProperty: build.mutation<Property, FormData>({
+      query: (newProperty) => ({
+        url: 'properties',
+        method: 'POST',
+        body: newProperty,
+      }),
+      invalidatesTags: (result) => [
+        { type: 'Properties', id: 'LIST' },
+        { type: 'Manager', id: result?.managerId },
+      ],
+    }),
     // lease endpoints
     getLeases: build.query<Lease[], number>({
       query: () => 'leases',
@@ -218,6 +229,7 @@ export const {
   useRemoveFavoritePropertyMutation,
   useGetTenantQuery,
   useGetManagerPropertiesQuery,
+  useCreatePropertyMutation,
   useGetLeasesQuery,
   useGetPropertyLeasesQuery,
   useGetPaymentsQuery,
