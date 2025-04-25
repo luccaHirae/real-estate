@@ -2,20 +2,21 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-// import { useGetAuthUserQuery } from '@/state/api';
+import { useGetAuthUserQuery } from '@/state/api';
 import { ImagePreviews } from '@/components/image-previews';
 import { PropertyOverview } from '@/components/property-overview';
 import { PropertyDetails } from '@/components/property-details';
 import { PropertyLocation } from '@/components/property-location';
 import { ContactWidget } from '@/components/contact-widget';
+import { ApplicationModal } from '@/components/application-modal';
 
 const SingleListing = () => {
   const { id } = useParams();
   const propertyId = Number(id);
-  // const { data: authUser } = useGetAuthUserQuery(undefined, {
-  //   refetchOnMountOrArgChange: true,
-  // });
-  const [, setIsModalOpen] = useState(false);
+  const { data: authUser } = useGetAuthUserQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div>
@@ -34,6 +35,14 @@ const SingleListing = () => {
           <ContactWidget onOpenModal={() => setIsModalOpen(true)} />
         </div>
       </div>
+
+      {authUser && (
+        <ApplicationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          propertyId={propertyId}
+        />
+      )}
     </div>
   );
 };
