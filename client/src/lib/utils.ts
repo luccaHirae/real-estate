@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,4 +33,25 @@ export function formatPriceValue(value: number | null, isMin: boolean) {
 
 export function formatEnumString(str: string) {
   return str.replace(/([A-Z])/g, ' $1').trim();
+}
+
+type MutationMessages = {
+  success?: string;
+  error?: string;
+};
+
+export async function withToast<T>(
+  mutation: Promise<T>,
+  messages: Partial<MutationMessages>
+) {
+  const { success, error } = messages;
+
+  try {
+    const result = await mutation;
+    if (success) toast.success(success);
+    return result;
+  } catch (err) {
+    if (error) toast.error(error);
+    throw err;
+  }
 }
